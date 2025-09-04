@@ -348,7 +348,3 @@ node-red &  # In separate terminal
 cd server && node index.js &  # In separate terminal
 npm run dev  # Frontend
 ```
-
-Your complete Node-RED MySQL integration is now ready!
-#   S m a r t _ b u i l d i n g  
- 

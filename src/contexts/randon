@@ -1,0 +1,50 @@
+// Fallback to mock data if API is unavailable
+        // setSensors([
+        //   {
+        //     id: '1',
+        //     name: 'Température Bureau A',
+        //     type: 'temperature',
+        //     room: 'Bureau A',
+        //     floor: 'RDC',
+        //     value: 22.5,
+        //     unit: '°C',
+        //     status: 'active',
+        //     lastUpdate: new Date(),
+        //     minThreshold: 18,
+        //     maxThreshold: 26
+        //   }
+        // ]);
+        // setEquipment([
+        //   {
+        //     id: '1',
+        //     name: 'Climatisation Bureau A',
+        //     type: 'hvac',
+        //     room: 'Bureau A',
+        //     floor: 'RDC',
+        //     status: 'on',
+        //     controllable: true,
+        //     value: 22,
+        //     lastUpdate: new Date()
+        //   }
+        // ]);
+        // setAlerts([
+        //   {
+        //     id: '1',
+        //     type: 'warning',
+        //     message: 'Niveau de CO₂ élevé dans la Salle Réunion',
+        //     sensorId: '3',
+        //     timestamp: new Date(),
+        //     acknowledged: false,
+        //     priority: 'medium'
+        //   }
+        // ]);
+        // setRooms([
+        //   {
+        //     id: '1',
+        //     name: 'Bureau A',
+        //     floor: 'RDC',
+        //     area: 25,
+        //     sensors: ['1'],
+        //     equipment: ['1']
+        //   }
+        // ]);
