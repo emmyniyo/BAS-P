@@ -1,6 +1,5 @@
-import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, Scissors as Sensors, Settings, BarChart3, AlertTriangle, Shield, X, Building2 } from 'lucide-react';
+import { LayoutDashboard, Scissors as Sensors, Settings, BarChart3, AlertTriangle, Shield, X, Building2, Camera } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 
 interface SidebarProps {
@@ -12,6 +11,7 @@ const navigation = [
   { name: 'Dashboard', href: '/', icon: LayoutDashboard },
   { name: 'Capteurs', href: '/sensors', icon: Sensors },
   { name: 'Contrôle', href: '/control', icon: Settings },
+  { name: 'Surveillance', href: '/surveillance', icon: Camera },
   { name: 'Historique', href: '/history', icon: BarChart3 },
   { name: 'Alertes', href: '/alerts', icon: AlertTriangle },
 ];
@@ -60,7 +60,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                 key={item.name}
                 to={item.href}
                 className={({ isActive }) => `
-                  group flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors duration-200
+                  group flex items-center px-3 py-4 text-sm font-medium rounded-md transition-colors duration-200
                   ${isActive 
                     ? 'bg-blue-50 text-blue-700 border-r-2 border-blue-600' 
                     : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'

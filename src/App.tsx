@@ -5,6 +5,7 @@ import Header from './components/layout/Header';
 import Dashboard from './pages/Dashboard';
 import Sensors from './pages/Sensors';
 import Control from './pages/Control';
+import Surveillance from './pages/Surveillance';
 import History from './pages/History';
 import Alerts from './pages/Alerts';
 import Administration from './pages/Administration';
@@ -31,6 +32,7 @@ function AppContent() {
             <Route path="/" element={<Dashboard />} />
             <Route path="/sensors" element={<Sensors />} />
             <Route path="/control" element={<Control />} />
+            <Route path="/surveillance" element={<Surveillance />} />
             <Route path="/history" element={<History />} />
             <Route path="/alerts" element={<Alerts />} />
             <Route path="/admin" element={<Administration />} />
