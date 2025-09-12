@@ -63,8 +63,8 @@ export default function Control() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
           <div className="flex items-center space-x-3">
-            <div className="p-3 bg-green-100 rounded-lg">
-              <Power className="h-6 w-6 text-green-600" />
+            <div className="p-3 bg-blue-100 rounded-lg">
+              <Power className="h-6 w-6 text-blue-600" />
             </div>
             <div>
               <p className="text-sm text-gray-600">Équipements Actifs</p>
@@ -91,8 +91,8 @@ export default function Control() {
 
         <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
           <div className="flex items-center space-x-3">
-            <div className="p-3 bg-purple-100 rounded-lg">
-              <Activity className="h-6 w-6 text-purple-600" />
+            <div className="p-3 bg-blue-100 rounded-lg">
+              <Activity className="h-6 w-6 text-blue-600" />
             </div>
             <div>
               <p className="text-sm text-gray-600">Total</p>
@@ -131,7 +131,7 @@ export default function Control() {
 
                   <div className="flex items-center space-x-3">
                     <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-                      isOn ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'
+                      isOn ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-600'
                     }`}>
                       {isOn ? 'ON' : 'OFF'}
                     </span>
@@ -146,15 +146,16 @@ export default function Control() {
                       <button
                         onClick={() => handleToggle(item.id, item.status, item)}
                         disabled={isLoading}
-                        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed ${
-                          isOn ? 'bg-blue-600' : 'bg-gray-200'
-                        }`}
+                        className={`toggle-button ${isOn ? 'toggle-button-on' : 'toggle-button-off'}`}
                       >
                         <span
-                          className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-200 ${
-                            isOn ? 'translate-x-6' : 'translate-x-1'
-                          }`}
+                          className={`toggle-knob ${isOn ? 'toggle-knob-on' : 'toggle-knob-off'} ${isLoading ? 'toggle-loading' : ''}`}
                         />
+                        {isLoading && (
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <div className="loading-spinner"></div>
+                          </div>
+                        )}
                       </button>
                     </div>
                   )}
@@ -174,7 +175,8 @@ export default function Control() {
                         value={item.value}
                         onChange={(e) => handleValueChange(item.id, parseFloat(e.target.value), item)}
                         disabled={isLoading}
-                        className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider disabled:opacity-50"
+                        className="slider disabled:opacity-50"
+                        style={{'--value': `${((item.value - 16) / (28 - 16)) * 100}%`} as React.CSSProperties}
                       />
                       <div className="flex justify-between text-xs text-gray-500">
                         <span>16°C</span>
@@ -188,7 +190,7 @@ export default function Control() {
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
                         <span className="font-medium text-gray-900">Intensité</span>
-                        <span className="text-lg font-semibold text-yellow-600">{item.value}%</span>
+                        <span className="text-lg font-semibold text-blue-600">{item.value}%</span>
                       </div>
                       <input
                         type="range"
@@ -198,7 +200,8 @@ export default function Control() {
                         value={item.value}
                         onChange={(e) => handleValueChange(item.id, parseInt(e.target.value), item)}
                         disabled={isLoading}
-                        className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider disabled:opacity-50"
+                        className="slider disabled:opacity-50"
+                        style={{'--value': `${item.value}%`} as React.CSSProperties}
                       />
                       <div className="flex justify-between text-xs text-gray-500">
                         <span>0%</span>

@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
+import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { nodeRedApi } from '../services/api';
 
 export interface Sensor {
@@ -71,6 +71,9 @@ interface DataContextType {
   addRoom: (room: Omit<Room, 'id'>) => void;
   addSensor: (sensor: Omit<Sensor, 'id'>) => void;
   addEquipment: (equipment: Omit<Equipment, 'id'>) => void;
+  deleteRoom: (id: string) => void;
+  deleteSensor: (id: string) => void;
+  deleteEquipment: (id: string) => void;
 }
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
@@ -82,11 +85,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
   const [rooms, setRooms] = useState<Room[]>([]);
   const [users, setUsers] = useState<User[]>([]);
 
-  // Handle WebSocket errors
-  const handleWebSocketError = useCallback((error: Event) => {
-    // setIsConnected(false);
-    console.log('Connection to Node-RED lost. Attempting to reconnect...');
-  }, []);
+  // Handle WebSocket errors - removed unused function
 
   // Fetch data from API on component mount
   useEffect(() => {
@@ -110,7 +109,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
         setEquipment(equipmentData);
         // setAlerts(alertData);
         setRooms(roomData);
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error fetching data:', error);
 
       }
@@ -144,7 +143,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
     };
 
 
-  }, [sensors]);
+  }, []); // Remove sensors dependency to prevent infinite loop
 
   // Update sensor via API
   const updateSensor = async (id: string, updates: Partial<Sensor>) => {
@@ -244,8 +243,38 @@ export function DataProvider({ children }: { children: ReactNode }) {
     setSensors(sensors);
   };
 
-  const addEquipment = (equip: Omit<Equipment, 'id'>) => {
+  const addEquipment = (_equip: Omit<Equipment, 'id'>) => {
     // setEquipment(prev => [...prev, { ...equip, id: Date.now().toString(), lastUpdate: new Date() }]);
+  };
+
+  // Delete room via API
+  const deleteRoom = async (id: string) => {
+    try {
+      await nodeRedApi.deleteRoom(id);
+      setRooms(prev => prev.filter(room => room.id !== id));
+    } catch (error) {
+      console.error('Error deleting room:', error);
+    }
+  };
+
+  // Delete sensor via API
+  const deleteSensor = async (id: string) => {
+    try {
+      await nodeRedApi.deleteSensor(id);
+      setSensors(prev => prev.filter(sensor => sensor.id !== id));
+    } catch (error) {
+      console.error('Error deleting sensor:', error);
+    }
+  };
+
+  // Delete equipment via API
+  const deleteEquipment = async (id: string) => {
+    try {
+      await nodeRedApi.deleteEquipment(id);
+      setEquipment(prev => prev.filter(item => item.id.toString() !== id));
+    } catch (error) {
+      console.error('Error deleting equipment:', error);
+    }
   };
 
   return (
@@ -263,7 +292,10 @@ export function DataProvider({ children }: { children: ReactNode }) {
       addEquipment,
       createUser,
       updateUser,
-      deleteUser
+      deleteUser,
+      deleteRoom,
+      deleteSensor,
+      deleteEquipment
     }}>
       {children}
     </DataContext.Provider>
