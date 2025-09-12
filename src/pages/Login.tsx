@@ -27,7 +27,7 @@ export default function Login() {
       setIsLoading(false);
     }
   };
-
+  // login quickly with demo accounts
   const quickLogin = (email: string, password: string) => {
     setFormData({ email, password });
   };
