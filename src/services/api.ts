@@ -11,9 +11,10 @@ export interface ApiConfig {
 
 // Default configuration - update these URLs to match your Node-RED setup
 const defaultConfig: ApiConfig = {
-  baseUrl: 'http://localhost:1880/api',
-  wsUrl: 'ws://localhost:1880/ws/equipement',
-  wsSensorUrl: 'ws://localhost:1880/ws/sensor',
+  // baseUrl: 'http://localhost:1880/api',
+  baseUrl: 'https://c51803127981.ngrok-free.app/api',
+  wsUrl: 'ws://c51803127981.ngrok-free.app/ws/equipement',
+  wsSensorUrl: 'ws://c51803127981.ngrok-free.app/ws/sensor',
 };
 
 export class BackendApiService {
@@ -33,6 +34,8 @@ export class BackendApiService {
     const url = `${this.config.baseUrl}${endpoint}`;
     const headers: HeadersInit = {
       'Content-Type': 'application/json',
+      'ngrok-skip-browser-warning': 'true', // Skip ngrok browser warning
+      'User-Agent': 'BAS-Project-Client/1.0', // Custom User-Agent to bypass ngrok warning
       ...options.headers
     };
 
@@ -54,27 +57,15 @@ export class BackendApiService {
   }
 
   // Sensor data endpoints
-  async getSensorData() {
-    return this.makeRequest('/sensor');
-  }
+  // getSensorData moved to transformed methods below
 
   async getSensorHistory(sensorId: string, timeRange: string = '24h') {
     return this.makeRequest(`/sensor/${sensorId}/history?range=${timeRange}`);
   }
 
-  // Room control endpoints
-  async getRoomControls() {
-    return this.makeRequest('/equipment');
-  }
-  // Room data endpoints
-  async getRoomData() {
-    return this.makeRequest('/room');
-  }
-
-  // Users data endpoints
-  async getUsersData() {
-    return this.makeRequest('/users');
-  }
+  // Room control endpoints - moved to transformed methods below
+  // Room data endpoints - moved to transformed methods below
+  // Users data endpoints - moved to transformed methods below
 
   // Update room control (e.g., turn on/off lights, adjust thermostat)
   async updateRoomControl(controlId: string, status: boolean, value?: number) {
@@ -136,6 +127,27 @@ export class BackendApiService {
       body: JSON.stringify(payload),
     });
   };
+
+  // Delete room
+  async deleteRoom(id: string) {
+    return this.makeRequest(`/room/${id}`, {
+      method: "DELETE",
+    });
+  }
+
+  // Delete sensor
+  async deleteSensor(id: string) {
+    return this.makeRequest(`/sensor/${id}`, {
+      method: "DELETE",
+    });
+  }
+
+  // Delete equipment
+  async deleteEquipment(id: string) {
+    return this.makeRequest(`/equipment/${id}`, {
+      method: "DELETE",
+    });
+  }
 
   // Alert endpoints
   async getAlerts() {
@@ -306,6 +318,79 @@ export class BackendApiService {
     }
   }
 
+  // Data transformation methods
+  private transformUserData(apiUser: any) {
+    return {
+      id: apiUser.id.toString(),
+      firstname: apiUser.firstname,
+      lastname: apiUser.lastname,
+      email: apiUser.email,
+      role: apiUser.role as "admin" | "user",
+      created_at: apiUser.created_at
+    };
+  }
+
+  private transformRoomData(apiRoom: any) {
+    return {
+      id: apiRoom.id.toString(),
+      name: apiRoom.name,
+      floor: apiRoom.floor,
+      area: apiRoom.area,
+      sensors: apiRoom.sensors || [],
+      equipment: apiRoom.equipment || []
+    };
+  }
+
+  private transformEquipmentData(apiEquipment: any) {
+    return {
+      id: parseInt(apiEquipment.id),
+      name: apiEquipment.name,
+      type: apiEquipment.type,
+      room: apiEquipment.room,
+      floor: apiEquipment.floor,
+      status: apiEquipment.status as 'on' | 'off',
+      controllable: Boolean(apiEquipment.controllable),
+      value: apiEquipment.value,
+      lastUpdate: new Date(apiEquipment.lastUpdate)
+    };
+  }
+
+  private transformSensorData(apiSensor: any) {
+    return {
+      id: apiSensor.id.toString(),
+      name: apiSensor.name,
+      type: apiSensor.type,
+      room: apiSensor.room,
+      floor: apiSensor.floor,
+      value: apiSensor.value,
+      unit: apiSensor.unit,
+      status: apiSensor.status as 'active' | 'inactive' | 'error',
+      lastUpdate: new Date(apiSensor.lastUpdate),
+      minThreshold: apiSensor.minThreshold,
+      maxThreshold: apiSensor.maxThreshold
+    };
+  }
+
+  // Updated API methods with data transformation
+  async getUsersData() {
+    const response = await this.makeRequest('/users');
+    return response.map((user: any) => this.transformUserData(user));
+  }
+
+  async getRoomData() {
+    const response = await this.makeRequest('/room');
+    return response.map((room: any) => this.transformRoomData(room));
+  }
+
+  async getRoomControls() {
+    const response = await this.makeRequest('/equipment');
+    return response.map((equipment: any) => this.transformEquipmentData(equipment));
+  }
+
+  async getSensorData() {
+    const response = await this.makeRequest('/sensor');
+    return response.map((sensor: any) => this.transformSensorData(sensor));
+  }
 }
 
 // Export singleton instance

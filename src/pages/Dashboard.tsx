@@ -26,8 +26,8 @@ interface MetricCardProps {
 
 function MetricCard({ title, value, unit, icon: Icon, status, trend, room }: MetricCardProps) {
   const statusColors = {
-    good: 'bg-green-50 text-green-700 border-green-200',
-    warning: 'bg-yellow-50 text-yellow-700 border-yellow-200',
+    good: 'bg-blue-50 text-blue-700 border-blue-200',
+    warning: 'bg-amber-50 text-amber-700 border-amber-200',
     danger: 'bg-red-50 text-red-700 border-red-200'
   };
 
@@ -85,7 +85,7 @@ function EquipmentCard({ name, type, status, value, room }: EquipmentCardProps) 
       <div className="flex items-center justify-between mb-2">
         <Icon className={`h-6 w-6 ${isOn ? 'text-blue-600' : 'text-gray-400'}`} />
         <div className={`px-2 py-1 rounded-full text-xs font-medium ${
-          isOn ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'
+          isOn ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-600'
         }`}>
           {isOn ? 'ON' : 'OFF'}
         </div>
@@ -134,42 +134,46 @@ export default function Dashboard() {
 
       {/* Quick Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+        <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-xl shadow-sm border border-blue-200">
           <div className="flex items-center space-x-3">
-            <div className="p-3 bg-blue-100 rounded-lg">
-              <Activity className="h-6 w-6 text-blue-600" />
+            <div className="p-3 bg-blue-500 rounded-lg">
+              <Activity className="h-6 w-6 text-white" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Capteurs Actifs</p>
-              <p className="text-2xl font-bold text-gray-900">
+              <p className="text-sm text-blue-700">Capteurs Actifs</p>
+              <p className="text-2xl font-bold text-blue-900">
                 {sensors.filter(s => s.status === 'active').length}/{sensors.length}
               </p>
             </div>
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+        <div className="bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-xl shadow-sm border border-green-200">
           <div className="flex items-center space-x-3">
-            <div className="p-3 bg-green-100 rounded-lg">
-              <Zap className="h-6 w-6 text-green-600" />
+            <div className="p-3 bg-green-500 rounded-lg">
+              <Zap className="h-6 w-6 text-white" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Équipements ON</p>
-              <p className="text-2xl font-bold text-gray-900">
+              <p className="text-sm text-green-700">Équipements ON</p>
+              <p className="text-2xl font-bold text-green-900">
                 {equipment.filter(e => e.status === 'on').length}/{equipment.length}
               </p>
             </div>
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+        <div className={`p-6 rounded-xl shadow-sm border ${
+          activeAlerts.length > 0 
+            ? 'bg-gradient-to-br from-red-50 to-red-100 border-red-200' 
+            : 'bg-gradient-to-br from-gray-50 to-gray-100 border-gray-200'
+        }`}>
           <div className="flex items-center space-x-3">
-            <div className={`p-3 rounded-lg ${activeAlerts.length > 0 ? 'bg-red-100' : 'bg-gray-100'}`}>
-              <AlertCircle className={`h-6 w-6 ${activeAlerts.length > 0 ? 'text-red-600' : 'text-gray-400'}`} />
+            <div className={`p-3 rounded-lg ${activeAlerts.length > 0 ? 'bg-red-500' : 'bg-gray-400'}`}>
+              <AlertCircle className="h-6 w-6 text-white" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Alertes Actives</p>
-              <p className="text-2xl font-bold text-gray-900">{activeAlerts.length}</p>
+              <p className={`text-sm ${activeAlerts.length > 0 ? 'text-red-700' : 'text-gray-600'}`}>Alertes Actives</p>
+              <p className={`text-2xl font-bold ${activeAlerts.length > 0 ? 'text-red-900' : 'text-gray-700'}`}>{activeAlerts.length}</p>
             </div>
           </div>
         </div>
