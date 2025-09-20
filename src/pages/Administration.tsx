@@ -324,7 +324,7 @@ function EditRoomModal({ isOpen, onClose, onSubmit, initial }: EditRoomModalProp
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(formData);
+    onSubmit(formData as Room);
     onClose();
   };
 
@@ -577,7 +577,7 @@ interface AddEquipmentModalProps {
 interface EditRoomModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (room: Omit<Room, 'id'>) => void;
+  onSubmit: (room: Room) => void;
   initial: Room | null;
 }
 
@@ -592,7 +592,7 @@ interface EditSensorModalProps {
 interface EditEquipmentModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (equipment: Omit<Equipment, 'id'>) => void;
+  onSubmit: (equipment: Equipment) => void;
   initial: Equipment | null;
   rooms: Room[];
 }
@@ -840,7 +840,7 @@ function EditEquipmentModal({ isOpen, onClose, onSubmit, initial, rooms }: EditE
       ...formData,
       lastUpdate: new Date()
     };
-    onSubmit(equipmentData);
+    onSubmit(equipmentData as Equipment);
     onClose();
   };
 
@@ -1335,14 +1335,16 @@ export default function Administration() {
     sensors, 
     equipment, 
     addRoom, 
+    updateRoom,
     addSensor, 
-    addEquipment, 
+    addEquipmentData, 
+    updateEquipmentData, 
+    deleteEquipmentData, 
     createUser, 
     updateUser, 
     deleteUser,
     deleteRoom,
-    deleteSensor,
-    deleteEquipment
+    deleteSensor
   } = useData();
   const [activeTab, setActiveTab] = useState<'rooms' | 'sensors' | 'equipment' | 'users'>('rooms');
   const [isAddRoomModalOpen, setIsAddRoomModalOpen] = useState(false);
@@ -1381,16 +1383,17 @@ export default function Administration() {
 
   const handleDeleteConfirm = () => {
     if (!itemToDelete) return;
+    const id = parseInt(itemToDelete.id);
 
     switch (itemToDelete.type) {
       case 'room':
-        deleteRoom(itemToDelete.id);
+        deleteRoom(id);
         break;
       case 'sensor':
         deleteSensor(itemToDelete.id);
         break;
       case 'equipment':
-        deleteEquipment(itemToDelete.id);
+        deleteEquipmentData(id);
         break;
       case 'user':
         deleteUser(itemToDelete.id);
@@ -1793,10 +1796,7 @@ export default function Administration() {
           setIsEditRoomModalOpen(false);
           setRoomBeingEdited(null);
         }}
-        onSubmit={(data: any) => {
-          // For now, just log the data since we don't have an updateRoom function yet
-          console.log('Room update data:', data);
-        }}
+        onSubmit={updateRoom}
         initial={roomBeingEdited}
       />
 
@@ -1806,6 +1806,8 @@ export default function Administration() {
         onSubmit={addSensor}
         rooms={rooms}
       />
+
+      {/* Edit Sensor Modal */}
       <EditSensorModal
         isOpen={isEditSensorModalOpen}
         onClose={() => {
@@ -1824,19 +1826,18 @@ export default function Administration() {
       <AddEquipmentModal
         isOpen={isAddEquipmentModalOpen}
         onClose={() => setIsAddEquipmentModalOpen(false)}
-        onSubmit={addEquipment}
+        onSubmit={addEquipmentData}
         rooms={rooms}
       />
+
+      {/* Edit Equipment Modal */}
       <EditEquipmentModal
         isOpen={isEditEquipmentModalOpen}
         onClose={() => {
           setIsEditEquipmentModalOpen(false);
           setEquipmentBeingEdited(null);
         }}
-        onSubmit={(data: any) => {
-          // For now, just log the data since we don't have an updateEquipment function yet
-          console.log('Equipment update data:', data);
-        }}
+        onSubmit={updateEquipmentData}
         initial={equipmentBeingEdited}
         rooms={rooms}
       />
@@ -1847,6 +1848,8 @@ export default function Administration() {
         onClose={() => setIsAddUserModalOpen(false)}
         onSubmit={(data: any) => createUser(data.firstname, data.lastname, data.email, data.role, data.password)}
       />
+
+      {/* Edit User Modal */}
       <EditUserModal
         isOpen={isEditUserModalOpen}
         onClose={() => {

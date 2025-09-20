@@ -17,6 +17,7 @@ export default function Control() {
 
   const handleToggle = async (id: number, currentStatus: 'on' | 'off', control: Equipment) => {
     const newStatus = currentStatus === 'on' ? 'off' : 'on';
+    console.log('handleToggle', id, "status", newStatus, "control", control);
     
     // Set loading state for this specific equipment
     setLoadingStates(prev => ({ ...prev, [id]: true }));

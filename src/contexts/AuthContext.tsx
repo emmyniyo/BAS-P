@@ -23,9 +23,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = async (email: string, password: string): Promise<boolean> => {
     try {
-      const response = await fetch("http://localhost:1880/api/login", {
+      const response = await fetch("https://7de9be740087.ngrok-free.app/api/login", {
+        // const response = await fetch("http://localhost:1880/api/login", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          'ngrok-skip-browser-warning': 'true',
+          'User-Agent': 'BAS-Project-Client/1.0',
+        },
         body: JSON.stringify({ email, password })
       });
 
