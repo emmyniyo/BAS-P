@@ -1,4 +1,4 @@
-import { Sensor } from "../contexts/DataContext";
+import { Equipment, Room, Sensor } from "../contexts/DataContext";
 
 // API service for Node-RED integration
 export interface ApiConfig {
@@ -12,14 +12,14 @@ export interface ApiConfig {
 // Default configuration - update these URLs to match your Node-RED setup
 const defaultConfig: ApiConfig = {
   // local url
-  baseUrl: 'http://localhost:1880/api',
-  wsUrl: 'ws://localhost:1880/ws/equipement',
-  wsSensorUrl: 'ws://localhost:1880/ws/sensor',
+  // baseUrl: 'http://localhost:1880/api',
+  // wsUrl: 'ws://localhost:1880/ws/equipement',
+  // wsSensorUrl: 'ws://localhost:1880/ws/sensor',
 
   // ngrok url
-  // baseUrl: 'https://c51803127981.ngrok-free.app/api',
-  // wsUrl: 'ws://c51803127981.ngrok-free.app/ws/equipement',
-  // wsSensorUrl: 'ws://c51803127981.ngrok-free.app/ws/sensor',
+  baseUrl: 'https://7de9be740087.ngrok-free.app/api',
+  wsUrl: 'ws://7de9be740087.ngrok-free.app/ws/equipement',
+  wsSensorUrl: 'ws://7de9be740087.ngrok-free.app/ws/sensor',
 };
 
 export class BackendApiService {
@@ -46,6 +46,7 @@ export class BackendApiService {
 
 
     try {
+      // make request to get data from backend
       const response = await fetch(url, {
         ...options,
         headers
@@ -102,6 +103,30 @@ export class BackendApiService {
   };
 
 
+  async addRoom(room: Omit<Room, 'id'>) {
+    const payload = { name: room.name, floor: room.floor, area: room.area };
+    return this.makeRequest(`/room`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+  };
+
+  async udpateRoom(room: Room) {
+    const payload = { id: room.id, name: room.name, floor: room.floor, area: room.area };
+    return this.makeRequest(`/room/${room.id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+  };
+
+  async deleteRoom(id: number) {
+    return this.makeRequest(`/room/${id}`, {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+    });
+  };
 
 
   async addUser(firstname: string, lastname: string, email: string, role: string, password: string) {
@@ -110,6 +135,32 @@ export class BackendApiService {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
+    });
+  };
+
+
+  async addEquipment(equipment: Omit<Equipment, 'id'>) {
+    const payload = { name: equipment.name, type: equipment.type, room: equipment.room, floor: equipment.floor, status: equipment.status, value: equipment.value };
+    return this.makeRequest(`/equipment`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+  };
+
+  async updateEquipment(equipment: Equipment) {
+    const payload = { id: equipment.id, name: equipment.name, type: equipment.type, room: equipment.room, floor: equipment.floor, status: equipment.status, value: equipment.value };
+    return this.makeRequest(`/equipment/${equipment.id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+  };
+
+  async deleteEquipment(id: number) {
+    return this.makeRequest(`/equipment/${id}`, {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
     });
   };
 
@@ -133,23 +184,9 @@ export class BackendApiService {
     });
   };
 
-  // Delete room
-  async deleteRoom(id: string) {
-    return this.makeRequest(`/room/${id}`, {
-      method: "DELETE",
-    });
-  }
-
   // Delete sensor
   async deleteSensor(id: string) {
     return this.makeRequest(`/sensor/${id}`, {
-      method: "DELETE",
-    });
-  }
-
-  // Delete equipment
-  async deleteEquipment(id: string) {
-    return this.makeRequest(`/equipment/${id}`, {
       method: "DELETE",
     });
   }
@@ -271,7 +308,6 @@ export class BackendApiService {
   }
 
 
-
   private attemptReconnect(onMessage: (data: any) => void, onError?: (error: Event) => void) {
     if (this.reconnectAttempts < this.maxReconnectAttempts) {
       this.reconnectAttempts++;
@@ -284,7 +320,6 @@ export class BackendApiService {
       console.log('Max reconnection attempts reached for Node-RED connection');
     }
   }
-
 
 
   sendWsRequest(action: string = "get_sensors") {

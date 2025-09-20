@@ -67,13 +67,15 @@ interface DataContextType {
   createUser: (firstname: string, lastname: string, email: string, role: string, password: string) => void;
   updateUser: (id: string, firstname: string, lastname: string, email: string, role: string, password: string) => void;
   deleteUser: (id: string) => void;
+  addEquipmentData: (equipment: Omit<Equipment, 'id'>) => void;
+  updateEquipmentData: (equipment: Equipment) => void;
+  deleteEquipmentData: (id: number) => void;
   acknowledgeAlert: (id: string) => void;
   addRoom: (room: Omit<Room, 'id'>) => void;
+  updateRoom: (room: Room) => void;
   addSensor: (sensor: Omit<Sensor, 'id'>) => void;
-  addEquipment: (equipment: Omit<Equipment, 'id'>) => void;
-  deleteRoom: (id: string) => void;
+  deleteRoom: (id: number) => void;
   deleteSensor: (id: string) => void;
-  deleteEquipment: (id: string) => void;
 }
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
@@ -158,6 +160,39 @@ export function DataProvider({ children }: { children: ReactNode }) {
   };
 
 
+
+
+  const addEquipmentData = async (_equip: Omit<Equipment, 'id'>) => {
+    try {
+      await nodeRedApi.addEquipment(_equip);
+      const equipment = await nodeRedApi.getRoomControls();
+      setEquipment(equipment);
+    } catch (error) {
+      console.error('Error adding equipment:', error);
+    }
+  };
+
+  const updateEquipmentData = async (equipmente: Equipment) => {
+    try {
+      await nodeRedApi.updateEquipment(equipmente);
+      const equipment = await nodeRedApi.getRoomControls();
+      setEquipment(equipment);
+    } catch (error) {
+      console.error('Error updating equipment:', error);
+    }
+  };
+
+  const deleteEquipmentData = async (id: number) => {
+    try {
+      await nodeRedApi.deleteEquipment(id);
+      const equipment = await nodeRedApi.getRoomControls();
+      setEquipment(equipment);
+    } catch (error) {
+      console.error('Error deleting equipment:', error);
+    }
+  };
+
+
   // cREATE USER via API
   const createUser = async (firstname: string, lastname: string, email: string, role: string, password: string) => {
     try {
@@ -196,10 +231,12 @@ export function DataProvider({ children }: { children: ReactNode }) {
 
   // Update equipment via API
   const updateEquipment = async (id: number, action: string, updates: Partial<Equipment>) => {
+    console.log('updateEquipment', id, action, updates);
+
     try {
       // await nodeRedApi.updateRoomControl(id, updates.status === 'on', updates.value);
 
-      nodeRedApi.sendCommand(
+      await nodeRedApi.sendCommand(
         action,
         "equipment",
         id,
@@ -233,9 +270,30 @@ export function DataProvider({ children }: { children: ReactNode }) {
   };
 
   // Local CRUD operations (for demo/testing)
-  const addRoom = (room: Omit<Room, 'id'>) => {
-    setRooms(prev => [...prev, { ...room, id: Date.now().toString() }]);
+  const addRoom = async (room: Omit<Room, 'id'>) => {
+    await nodeRedApi.addRoom(room);
+    const rooms = await nodeRedApi.getRoomData();
+    setRooms(rooms);
   };
+
+  const updateRoom = async (room: Room) => {
+    await nodeRedApi.udpateRoom(room);
+    const rooms = await nodeRedApi.getRoomData();
+    setRooms(rooms);
+  };
+
+
+  // Delete room via API
+  const deleteRoom = async (id: number) => {
+    try {
+      await nodeRedApi.deleteRoom(id);
+      const rooms = await nodeRedApi.getRoomData();
+      setRooms(rooms);
+    } catch (error) {
+      console.error('Error deleting room:', error);
+    }
+  };
+
 
   const addSensor = async (sensor: Omit<Sensor, 'id'>) => {
     await nodeRedApi.addSensor(sensor);
@@ -243,19 +301,6 @@ export function DataProvider({ children }: { children: ReactNode }) {
     setSensors(sensors);
   };
 
-  const addEquipment = (_equip: Omit<Equipment, 'id'>) => {
-    // setEquipment(prev => [...prev, { ...equip, id: Date.now().toString(), lastUpdate: new Date() }]);
-  };
-
-  // Delete room via API
-  const deleteRoom = async (id: string) => {
-    try {
-      await nodeRedApi.deleteRoom(id);
-      setRooms(prev => prev.filter(room => room.id !== id));
-    } catch (error) {
-      console.error('Error deleting room:', error);
-    }
-  };
 
   // Delete sensor via API
   const deleteSensor = async (id: string) => {
@@ -264,16 +309,6 @@ export function DataProvider({ children }: { children: ReactNode }) {
       setSensors(prev => prev.filter(sensor => sensor.id !== id));
     } catch (error) {
       console.error('Error deleting sensor:', error);
-    }
-  };
-
-  // Delete equipment via API
-  const deleteEquipment = async (id: string) => {
-    try {
-      await nodeRedApi.deleteEquipment(id);
-      setEquipment(prev => prev.filter(item => item.id.toString() !== id));
-    } catch (error) {
-      console.error('Error deleting equipment:', error);
     }
   };
 
@@ -288,14 +323,16 @@ export function DataProvider({ children }: { children: ReactNode }) {
       updateEquipment,
       acknowledgeAlert,
       addRoom,
+      updateRoom,
+      deleteRoom,
       addSensor,
-      addEquipment,
+      addEquipmentData,
+      updateEquipmentData,
+      deleteEquipmentData,
       createUser,
       updateUser,
       deleteUser,
-      deleteRoom,
-      deleteSensor,
-      deleteEquipment
+      deleteSensor
     }}>
       {children}
     </DataContext.Provider>
