@@ -27,7 +27,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
     <>
       {/* Mobile overlay */}
       {isOpen && (
-        <div 
+        <div
           className="fixed inset-0 z-40 bg-gray-600 bg-opacity-75 lg:hidden"
           onClick={onClose}
         />
@@ -42,7 +42,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
         <div className="flex items-center justify-between h-16 px-6 border-b border-gray-200">
           <div className="flex items-center space-x-3">
             <Building2 className="h-8 w-8 text-blue-600" />
-            <span className="text-xl font-bold text-gray-900">FacilityHub</span>
+            <span className="text-xl font-bold text-gray-900"> ISICOD </span>
           </div>
           <button
             onClick={onClose}
@@ -61,8 +61,8 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                 to={item.href}
                 className={({ isActive }) => `
                   group flex items-center px-3 py-4 text-sm font-medium rounded-md transition-colors duration-200
-                  ${isActive 
-                    ? 'bg-blue-50 text-blue-700 border-r-2 border-blue-600' 
+                  ${isActive
+                    ? 'bg-blue-50 text-blue-700 border-r-2 border-blue-600'
                     : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
                   }
                 `}
@@ -88,8 +88,8 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                     to={item.href}
                     className={({ isActive }) => `
                       group flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors duration-200
-                      ${isActive 
-                        ? 'bg-blue-50 text-blue-700 border-r-2 border-blue-600' 
+                      ${isActive
+                        ? 'bg-blue-50 text-blue-700 border-r-2 border-blue-600'
                         : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
                       }
                     `}

@@ -12,14 +12,14 @@ export interface ApiConfig {
 // Default configuration - update these URLs to match your Node-RED setup
 const defaultConfig: ApiConfig = {
   // local url
-  // baseUrl: 'http://localhost:1880/api',
-  // wsUrl: 'ws://localhost:1880/ws/equipement',
-  // wsSensorUrl: 'ws://localhost:1880/ws/sensor',
+  baseUrl: 'http://localhost:1880/api',
+  wsUrl: 'ws://localhost:1880/ws/equipement',
+  wsSensorUrl: 'ws://localhost:1880/ws/sensor',
 
   // ngrok url
-  baseUrl: 'https://7de9be740087.ngrok-free.app/api',
-  wsUrl: 'ws://7de9be740087.ngrok-free.app/ws/equipement',
-  wsSensorUrl: 'ws://7de9be740087.ngrok-free.app/ws/sensor',
+  // baseUrl: 'https://7de9be740087.ngrok-free.app/api',
+  // wsUrl: 'ws://7de9be740087.ngrok-free.app/ws/equipement',
+  // wsSensorUrl: 'ws://7de9be740087.ngrok-free.app/ws/sensor',
 };
 
 export class BackendApiService {
